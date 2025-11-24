@@ -1,22 +1,34 @@
-<template>
-  <el-config-provider :locale="locale.cn">
-    <router-view></router-view>
-  </el-config-provider>
-</template>
-<script lang="ts" setup>
-import { onBeforeMount } from 'vue'
+<script setup lang="ts">
 import { ElConfigProvider } from 'element-plus'
 import en from 'element-plus/es/locale/lang/en'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import plusZhCn from 'plus-pro-components/es/locale/lang/zh-cn'
+import plusEn from 'plus-pro-components/es/locale/lang/en'
 import { useSettingStore } from './stores/modules/setting'
 
-const locale = {
-  cn: { ...zhCn },
-  en: { ...en }
-}
+const settingStore = useSettingStore()
 
+const zhCnLocales = {
+  ...zhCn,
+  ...plusZhCn
+}
+const enLocales = {
+  ...en,
+  ...plusEn
+}
+const locale = {
+  zhCnLocales,
+  enLocales
+}
 onBeforeMount(() => {
-  useSettingStore().initTheme()
+  settingStore.initTheme()
 })
 </script>
-<style lang="scss" scoped></style>
+
+<template>
+  <el-config-provider :locale="locale.zhCnLocales">
+    <RouterView></RouterView>
+  </el-config-provider>
+</template>
+
+<style scoped></style>

@@ -15,7 +15,7 @@
   </el-segmented>
 </template>
 <script lang="ts" setup>
-import { LayoutTypeEnum } from '@/enums'
+import { LayoutTypeEnum } from '@/enums/theme'
 import { useSettingStore } from '@/stores/modules/setting'
 
 defineOptions({

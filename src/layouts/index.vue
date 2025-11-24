@@ -1,28 +1,37 @@
 <template>
   <Transition name="layout-fade" mode="out-in">
-    <component class="app-layout" :is="currentLayout" :key="settingStore.layoutType" />
+    <component :is="currentLayout" :key="settingStore.layoutType" />
   </Transition>
-  <SettingPanel></SettingPanel>
+  <SettingPanel />
 </template>
+
 <script lang="ts" setup>
+import { LAYOUT_CONFIGS } from '@/config/layout'
 import { useSettingStore } from '@/stores/modules/setting'
 import SettingPanel from './components/SettingPanel/index.vue'
-import { computed } from 'vue'
-import { LAYOUTS } from './layout'
 
 defineOptions({
   name: 'AppLayout'
 })
+
 const settingStore = useSettingStore()
+
 const currentLayout = computed(() => {
-  const config = LAYOUTS.find((item) => item.type === settingStore.layoutType)
+  const config = LAYOUT_CONFIGS.find((item) => item.type === settingStore.layoutType)
+  console.log('config', config)
   return config?.component
 })
 console.log(currentLayout)
 </script>
+
 <style lang="scss" scoped>
-.app-layout {
-  width: 100%;
-  height: 100%;
+.layout-fade-enter-active,
+.layout-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.layout-fade-enter-from,
+.layout-fade-leave-to {
+  opacity: 0;
 }
 </style>

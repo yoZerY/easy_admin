@@ -137,7 +137,6 @@
 import { useTagsViewStore, type TagView } from '@/stores/modules/tagsView'
 import { useSettingStore } from '@/stores/modules/setting'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, computed, nextTick, watch, onMounted, onBeforeUnmount } from 'vue'
 
 defineOptions({
   name: 'TagsView'
@@ -438,7 +437,9 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .tags-view-container {
   width: 100%;
+  background: var(--el-fill-color-blank);
   border-bottom: 1px solid var(--el-border-color-lighter);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   position: relative;
@@ -453,6 +454,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   cursor: pointer;
   color: var(--el-text-color-regular);
+  background: var(--el-fill-color-blank);
   transition: all 0.3s;
   z-index: 10;
 
@@ -525,45 +527,100 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 20px;
+  padding: 8px 16px;
   min-width: min-content;
 }
 
 .tags-view-item {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
-  font-size: 14px;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  position: relative;
 
   .tag-pin-icon {
+    flex-shrink: 0;
     color: var(--el-color-primary);
+    transition: transform 0.3s;
+  }
+
+  .tag-icon {
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+
+  .tag-title {
+    flex-shrink: 0;
+    line-height: 1.5;
   }
 
   .tag-close-wrapper {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    opacity: 1;
+    transition: all 0.25s;
     border-radius: 50%;
     cursor: pointer;
+    background: transparent;
 
     &:hover {
-      background: var(--el-color-primary-light-9);
+      background: var(--el-fill-color-dark);
+      transform: scale(1.15);
 
       .tag-close {
-        color: var(--el-color-primary);
+        color: var(--el-color-danger);
       }
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
   }
 
   .tag-close {
+    flex-shrink: 0;
     pointer-events: none;
+    transition: all 0.2s;
     color: var(--el-text-color-secondary);
+  }
+
+  &:hover {
+    .tag-icon,
+    .tag-pin-icon {
+      transform: scale(1.1);
+    }
+
+    .tag-close {
+      color: var(--el-text-color-regular);
+    }
+  }
+
+  &.active {
+    .tag-close {
+      color: var(--el-text-color-regular);
+    }
+  }
+
+  &.pinned {
+    .tag-pin-icon {
+      animation: pinPulse 2s ease-in-out infinite;
+    }
+  }
+
+  &[draggable='true'] {
+    cursor: move;
   }
 }
 
@@ -603,25 +660,55 @@ onBeforeUnmount(() => {
 
 /* ==================== 卡片风格 ==================== */
 .tags-view-card {
+  background: var(--el-fill-color-light);
+
   .tags-view-item {
-    border: 1px solid var(--el-color-info-light-7);
+    border: 1px solid var(--el-border-color-lighter);
     border-radius: 6px;
-    color: var(--el-color-info);
+    background: white;
+    color: var(--el-text-color-regular);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 
     &:hover {
-      color: var(--el-color-primary);
+      background: var(--el-fill-color-blank);
+      border-color: var(--el-color-primary-light-7);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
     }
 
     &.active {
-      color: var(--el-color-primary);
+      background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
+      color: white;
+      border-color: var(--el-color-primary);
+      box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.3);
+
+      .tag-close {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .tag-close-wrapper:hover {
+        background: rgba(255, 255, 255, 0.25);
+
+        .tag-close {
+          color: white;
+        }
+      }
+    }
+
+    &.pinned {
+      border-color: var(--el-color-primary-light-5);
+      background: linear-gradient(135deg, var(--el-color-primary-light-9), white);
     }
   }
 }
 
 /* ==================== 智能风格 ==================== */
 .tags-view-smart {
+  background: var(--el-fill-color-light);
+
   .tags-view-item {
     border-radius: 8px 8px 0 0;
+    background: transparent;
     color: var(--el-text-color-regular);
     position: relative;
     padding-bottom: 8px;
@@ -633,7 +720,7 @@ onBeforeUnmount(() => {
       left: 50%;
       transform: translateX(-50%);
       width: 0;
-      height: 2px;
+      height: 3px;
       background: var(--el-color-primary);
       border-radius: 3px 3px 0 0;
       transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -651,10 +738,11 @@ onBeforeUnmount(() => {
     &.active {
       background: var(--el-bg-color);
       color: var(--el-color-primary);
+      font-weight: 600;
 
       &::before {
         width: 100%;
-        height: 2px;
+        height: 3px;
       }
     }
 
@@ -673,6 +761,8 @@ onBeforeUnmount(() => {
 
 /* ==================== Chrome 风格 ==================== */
 .tags-view-chrome {
+  background: var(--el-fill-color-light);
+
   .tags-view-wrapper {
     .tags-view-list {
       gap: 2px;
@@ -756,6 +846,8 @@ onBeforeUnmount(() => {
 
 /* ==================== 圆滑风格 ==================== */
 .tags-view-smooth {
+  background: var(--el-fill-color-light);
+
   .tags-view-item {
     border-radius: 20px;
     background: var(--el-fill-color);
@@ -810,6 +902,7 @@ onBeforeUnmount(() => {
 
 /* ==================== 简约风格 ==================== */
 .tags-view-minimal {
+  background: var(--el-bg-color);
   border-bottom: 1px solid var(--el-border-color-light);
 
   .tags-view-item {
@@ -836,13 +929,14 @@ onBeforeUnmount(() => {
       color: var(--el-text-color-primary);
 
       &::after {
-        transform: scaleX(0.6);
+        transform: scaleX(0.5);
       }
     }
 
     &.active {
       background: var(--el-fill-color-light);
       color: var(--el-color-primary);
+      font-weight: 600;
 
       &::after {
         transform: scaleX(1);
@@ -867,6 +961,7 @@ onBeforeUnmount(() => {
 
 /* ==================== 胶囊风格 ==================== */
 .tags-view-capsule {
+  background: linear-gradient(to bottom, var(--el-fill-color-light), var(--el-bg-color));
   padding: 4px 0;
 
   .tags-view-item {
@@ -994,6 +1089,7 @@ onBeforeUnmount(() => {
 
   &.disabled {
     opacity: 0.5;
+    cursor: not-allowed;
     pointer-events: none;
   }
 }

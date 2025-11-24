@@ -15,7 +15,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { PRESET_COLOR } from '@/constants/index'
+import { PRESET_COLOR } from '@/config/setting'
 import { useSettingStore } from '@/stores/modules/setting'
 import { Select } from '@element-plus/icons-vue'
 defineOptions({

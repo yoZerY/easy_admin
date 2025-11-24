@@ -7,9 +7,8 @@
 </template>
 
 <script lang="ts" setup>
-import { PageTransitionEnum } from '@/enums'
 import { useSettingStore } from '@/stores/modules/setting'
-import { computed } from 'vue'
+import { PageTransitionEnum } from '@/enums/theme'
 
 defineOptions({
   name: 'AppContent'

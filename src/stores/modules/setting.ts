@@ -1,49 +1,48 @@
-import { DEFAULT_THEME_COLORS } from '@/constants'
-import { LayoutTypeEnum, PageTransitionEnum, TagsViewStyleEnum, ThemeModeEnum } from '@/enums'
-import {
-  applyAllColors,
-  applyColor,
-  applyThemeMode,
-  resolveThemeMode,
-  watchSystemTheme
-} from '@/utils/theme'
 import { defineStore } from 'pinia'
+import { DEFAULT_THEME_COLORS } from '@/config/setting'
+import { LayoutTypeEnum, ThemeModeEnum, PageTransitionEnum, TagsViewStyleEnum } from '@/enums/theme'
+import {
+  resolveThemeMode,
+  applyThemeMode,
+  applyColor,
+  applyAllColors,
+  watchSystemTheme
+} from '@/theme'
 
 export interface SettingState {
-  isDark: boolean
-  themeMode: ThemeModeEnum
   layoutType: LayoutTypeEnum
+  themeMode: ThemeModeEnum
   pageTransition: PageTransitionEnum
-  showTagsView: boolean
   tagsViewStyle: TagsViewStyleEnum
+  showTagsView: boolean
   primaryColor: string
   successColor: string
   warningColor: string
   dangerColor: string
   errorColor: string
   infoColor: string
-  menuCollapse: boolean
+  actualIsDark: boolean
 }
 
 export const useSettingStore = defineStore('setting', {
   state: (): SettingState => {
     return {
-      isDark: false,
-      themeMode: ThemeModeEnum.LIGHT,
       layoutType: LayoutTypeEnum.VERTICAL,
+      themeMode: ThemeModeEnum.LIGHT,
       pageTransition: PageTransitionEnum.FADE,
+      tagsViewStyle: TagsViewStyleEnum.SMART,
       showTagsView: true,
-      tagsViewStyle: TagsViewStyleEnum.CHROME,
       primaryColor: DEFAULT_THEME_COLORS.primary,
       successColor: DEFAULT_THEME_COLORS.success,
       warningColor: DEFAULT_THEME_COLORS.warning,
       dangerColor: DEFAULT_THEME_COLORS.danger,
       errorColor: DEFAULT_THEME_COLORS.error,
       infoColor: DEFAULT_THEME_COLORS.info,
-      menuCollapse: false
+      actualIsDark: false
     }
   },
   getters: {
+    isDark: (state) => state.actualIsDark,
     //获取所有颜色
     colors: (state) => {
       return {
@@ -57,21 +56,29 @@ export const useSettingStore = defineStore('setting', {
     }
   },
   actions: {
-    setMenuCollapse() {
-      this.menuCollapse = !this.menuCollapse
-    },
-    //设置布局
     setLayoutType(type: LayoutTypeEnum) {
       this.layoutType = type
-    },
-    setThemeMode(mode: ThemeModeEnum) {
-      this.themeMode = mode
-      this.applyTheme()
     },
     setPageTransition(transition: PageTransitionEnum) {
       this.pageTransition = transition
     },
-    //设置主颜色
+    setTagsViewStyle(style: TagsViewStyleEnum) {
+      this.tagsViewStyle = style
+    },
+    setShowTagsView(show: boolean) {
+      this.showTagsView = show
+    },
+    //应用主题
+    applyTheme() {
+      this.actualIsDark = resolveThemeMode(this.themeMode)
+      applyThemeMode(this.isDark)
+      applyAllColors(this.colors, this.isDark)
+    },
+    setThemeMode(mode: ThemeModeEnum) {
+      console.log('mode :>> ', mode)
+      this.themeMode = mode
+      this.applyTheme()
+    },
     setPrimaryColor(color: string) {
       this.primaryColor = color
       applyColor('primary', color, this.isDark)
@@ -96,30 +103,27 @@ export const useSettingStore = defineStore('setting', {
       this.errorColor = color
       applyColor('error', color, this.isDark)
     },
+
     // 设置信息色
     setInfoColor(color: string) {
       this.infoColor = color
       applyColor('info', color, this.isDark)
     },
-    //应用主题
-    applyTheme() {
-      this.isDark = resolveThemeMode(this.themeMode)
-      applyThemeMode(this.isDark)
-      applyAllColors(this.colors, this.isDark)
-    },
     // 初始化主题
     initTheme() {
+      this.applyTheme()
+
       // 如果是 AUTO 模式，监听系统主题变化
       if (this.themeMode === ThemeModeEnum.AUTO) {
         watchSystemTheme((isDark) => {
-          this.isDark = isDark
+          this.actualIsDark = isDark
           applyThemeMode(isDark)
           applyAllColors(this.colors, isDark)
         })
-      } else {
-        this.applyTheme()
       }
     }
   },
-  persist: true
+  persist: {
+    storage: localStorage
+  }
 })

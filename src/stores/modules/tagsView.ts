@@ -142,6 +142,6 @@ export const useTagsViewStore = defineStore('tagsView', {
     }
   },
   persist: {
-    storage: localStorage
+    storage: sessionStorage
   }
 })
