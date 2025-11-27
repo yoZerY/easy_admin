@@ -9,19 +9,23 @@ import {
   watchSystemTheme
 } from '@/theme'
 
+export interface ThemeColors {
+  primary: string
+  success: string
+  warning: string
+  danger: string
+  error: string
+  info: string
+}
+
 export interface SettingState {
   layoutType: LayoutTypeEnum
   themeMode: ThemeModeEnum
   pageTransition: PageTransitionEnum
   tagsViewStyle: TagsViewStyleEnum
   showTagsView: boolean
-  primaryColor: string
-  successColor: string
-  warningColor: string
-  dangerColor: string
-  errorColor: string
-  infoColor: string
-  actualIsDark: boolean
+  themeColors: ThemeColors
+  isDark: boolean
 }
 
 export const useSettingStore = defineStore('setting', {
@@ -32,28 +36,20 @@ export const useSettingStore = defineStore('setting', {
       pageTransition: PageTransitionEnum.FADE,
       tagsViewStyle: TagsViewStyleEnum.SMART,
       showTagsView: true,
-      primaryColor: DEFAULT_THEME_COLORS.primary,
-      successColor: DEFAULT_THEME_COLORS.success,
-      warningColor: DEFAULT_THEME_COLORS.warning,
-      dangerColor: DEFAULT_THEME_COLORS.danger,
-      errorColor: DEFAULT_THEME_COLORS.error,
-      infoColor: DEFAULT_THEME_COLORS.info,
-      actualIsDark: false
+      themeColors: {
+        primary: DEFAULT_THEME_COLORS.primary,
+        success: DEFAULT_THEME_COLORS.success,
+        warning: DEFAULT_THEME_COLORS.warning,
+        danger: DEFAULT_THEME_COLORS.danger,
+        error: DEFAULT_THEME_COLORS.error,
+        info: DEFAULT_THEME_COLORS.info
+      },
+      isDark: false
     }
   },
   getters: {
-    isDark: (state) => state.actualIsDark,
     //获取所有颜色
-    colors: (state) => {
-      return {
-        primary: state.primaryColor,
-        success: state.successColor,
-        warning: state.warningColor,
-        danger: state.dangerColor,
-        error: state.errorColor,
-        info: state.infoColor
-      }
-    }
+    colors: (state) => state.themeColors
   },
   actions: {
     setLayoutType(type: LayoutTypeEnum) {
@@ -70,7 +66,7 @@ export const useSettingStore = defineStore('setting', {
     },
     //应用主题
     applyTheme() {
-      this.actualIsDark = resolveThemeMode(this.themeMode)
+      this.isDark = resolveThemeMode(this.themeMode)
       applyThemeMode(this.isDark)
       applyAllColors(this.colors, this.isDark)
     },
@@ -80,33 +76,32 @@ export const useSettingStore = defineStore('setting', {
       this.applyTheme()
     },
     setPrimaryColor(color: string) {
-      this.primaryColor = color
+      this.themeColors.primary = color
       applyColor('primary', color, this.isDark)
     },
     // 设置成功色
     setSuccessColor(color: string) {
-      this.successColor = color
+      this.themeColors.success = color
       applyColor('success', color, this.isDark)
     },
     // 设置警告色
     setWarningColor(color: string) {
-      this.warningColor = color
+      this.themeColors.warning = color
       applyColor('warning', color, this.isDark)
     },
     // 设置危险色
     setDangerColor(color: string) {
-      this.dangerColor = color
+      this.themeColors.danger = color
       applyColor('danger', color, this.isDark)
     },
     // 设置错误色
     setErrorColor(color: string) {
-      this.errorColor = color
+      this.themeColors.error = color
       applyColor('error', color, this.isDark)
     },
-
     // 设置信息色
     setInfoColor(color: string) {
-      this.infoColor = color
+      this.themeColors.info = color
       applyColor('info', color, this.isDark)
     },
     // 初始化主题
@@ -116,7 +111,7 @@ export const useSettingStore = defineStore('setting', {
       // 如果是 AUTO 模式，监听系统主题变化
       if (this.themeMode === ThemeModeEnum.AUTO) {
         watchSystemTheme((isDark) => {
-          this.actualIsDark = isDark
+          this.isDark = isDark
           applyThemeMode(isDark)
           applyAllColors(this.colors, isDark)
         })
