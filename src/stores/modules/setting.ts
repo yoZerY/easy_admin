@@ -14,11 +14,11 @@ export interface ThemeColors {
   success: string
   warning: string
   danger: string
-  error: string
   info: string
 }
 
 export interface SettingState {
+  menuCollapse: boolean
   layoutType: LayoutTypeEnum
   themeMode: ThemeModeEnum
   pageTransition: PageTransitionEnum
@@ -31,6 +31,7 @@ export interface SettingState {
 export const useSettingStore = defineStore('setting', {
   state: (): SettingState => {
     return {
+      menuCollapse: false,
       layoutType: LayoutTypeEnum.VERTICAL,
       themeMode: ThemeModeEnum.LIGHT,
       pageTransition: PageTransitionEnum.FADE,
@@ -41,7 +42,6 @@ export const useSettingStore = defineStore('setting', {
         success: DEFAULT_THEME_COLORS.success,
         warning: DEFAULT_THEME_COLORS.warning,
         danger: DEFAULT_THEME_COLORS.danger,
-        error: DEFAULT_THEME_COLORS.error,
         info: DEFAULT_THEME_COLORS.info
       },
       isDark: false
@@ -93,11 +93,6 @@ export const useSettingStore = defineStore('setting', {
     setDangerColor(color: string) {
       this.themeColors.danger = color
       applyColor('danger', color, this.isDark)
-    },
-    // 设置错误色
-    setErrorColor(color: string) {
-      this.themeColors.error = color
-      applyColor('error', color, this.isDark)
     },
     // 设置信息色
     setInfoColor(color: string) {

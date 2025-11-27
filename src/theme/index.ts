@@ -1,14 +1,13 @@
 import { ThemeModeEnum } from '@/enums/theme'
 import tinycolor from 'tinycolor2'
 
-type ColorType = 'primary' | 'success' | 'warning' | 'danger' | 'error' | 'info'
+type ColorType = 'primary' | 'success' | 'warning' | 'danger' | 'info'
 
 interface ThemeColors {
   primary: string
   success: string
   warning: string
   danger: string
-  error: string
   info: string
 }
 
