@@ -2,19 +2,15 @@
 import { ElConfigProvider } from 'element-plus'
 import en from 'element-plus/es/locale/lang/en'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import plusZhCn from 'plus-pro-components/es/locale/lang/zh-cn'
-import plusEn from 'plus-pro-components/es/locale/lang/en'
 import { useSettingStore } from './stores/modules/setting'
 
 const settingStore = useSettingStore()
 
 const zhCnLocales = {
-  ...zhCn,
-  ...plusZhCn
+  ...zhCn
 }
 const enLocales = {
-  ...en,
-  ...plusEn
+  ...en
 }
 const locale = {
   zhCnLocales,

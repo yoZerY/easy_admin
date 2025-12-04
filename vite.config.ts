@@ -9,7 +9,6 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { PlusProComponentsResolver } from '@plus-pro-components/resolver'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -27,10 +26,7 @@ export default defineConfig(({ mode }) => {
         dts: 'src/typings/auto-imports.d.ts'
       }),
       Components({
-        resolvers: [
-          ElementPlusResolver({ importStyle: 'sass' }),
-          PlusProComponentsResolver({ importStyle: 'scss' })
-        ],
+        resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
         dts: 'src/typings/components.d.ts'
       })
     ],
